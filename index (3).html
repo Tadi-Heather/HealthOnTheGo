@@ -1,0 +1,1768 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>HealthOnTheGo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================================
+       DESIGN TOKENS
+    ============================================================ */
+    :root {
+  /* === BRAND COLOURS === */
+  --primary-blue: #2F80ED;
+  --secondary-green: #27AE60;
+  --bg-app: #F7F9FB;
+  --surface: #FFFFFF;
+
+  /* Functional */
+  --error-red:      #EB5757;
+  --warning-orange: #F2994A;
+  --info-teal:      #56CCF2;
+
+  /* Aliases used throughout the code */
+  --green:    #27AE60;
+  --green-dk: #1E8449;
+  --green-lt: #D5F5E3;
+  --red:      #EB5757;
+  --amber:    #F2994A;
+  --teal:     #56CCF2;
+
+  /* Neutral */
+  --text:      #111C18;
+  --text-2:    #4A6259;
+  --text-3:    #8FA89F;
+  --border:    #E2E8F0;
+  --surface-2: #F0F4F8;
+
+  /* Sizing */
+  --radius:    14px;
+  --radius-sm: 8px;
+  --nav-h:     60px;
+  --sidebar-w: 220px;
+
+  /* Shadows */
+  --shadow:    0 1px 4px rgba(0,0,0,.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.10);
+
+  /* Typography */
+  --font: 'Plus Jakarta Sans', 'Inter', sans-serif;
+}
+
+    /* ============================================================
+       RESET / BASE
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+  background: var(--bg-app);
+  font-family: var(--font);
+    }
+    img { max-width: 100%; display: block; }
+    a { color: var(--green); text-decoration: none; }
+    button { cursor: pointer; font-family: var(--font); }
+    input, textarea, select {
+      font-family: var(--font);
+      font-size: 14px;
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+      transition: border-color .2s;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--green); }
+    label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: var(--text-2); }
+    .field { margin-bottom: 16px; }
+    h1,h2,h3,h4 { line-height: 1.25; }
+
+    /* ============================================================
+       UTILITY
+    ============================================================ */
+    .hidden { display: none !important; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 99px; font-size: 12px; font-weight: 600;
+    }
+    .badge-green  { background: var(--green-lt); color: var(--green-dk); }
+    .badge-red    { background: #FEE2E2; color: var(--red); }
+    .badge-amber  { background: #FEF3C7; color: var(--amber); }
+    .badge-teal   { background: #E0F2FE; color: var(--teal); }
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+    .section-title {
+      font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 4px;
+    }
+    .section-sub { font-size: 14px; color: var(--text-2); margin-bottom: 24px; }
+    .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+    /* ============================================================
+       BUTTONS
+    ============================================================ */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+      padding: 10px 20px; border-radius: var(--radius-sm);
+      font-size: 14px; font-weight: 700; border: none;
+      transition: opacity .18s, transform .15s, box-shadow .18s;
+    }
+    .btn:active { transform: scale(.97); }
+    /* Primary Button Overrides  */
+.btn-primary {
+  background: var(--primary-blue) !important;
+  color: #fff;
+}
+    .btn-primary:hover { background: var(--green-dk); }
+    .btn-outline {
+      background: transparent; color: var(--green);
+      border: 1.5px solid var(--green);
+    }
+    .btn-outline:hover { background: var(--green-lt); }
+    .btn-danger  { background: var(--red); color: #fff; }
+    .btn-ghost   { background: transparent; color: var(--text-2); border: 1.5px solid var(--border); }
+    .btn-ghost:hover { border-color: var(--green); color: var(--green); }
+    .btn-sm { padding: 7px 14px; font-size: 13px; }
+    .btn-lg { padding: 13px 28px; font-size: 16px; border-radius: 12px; }
+    .btn-block { width: 100%; }
+
+    /* ============================================================
+       TOAST
+    ============================================================ */
+    #toast-region {
+      position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+      display: flex; flex-direction: column; gap: 8px; pointer-events: none;
+    }
+    .toast {
+      background: var(--text); color: #fff;
+      padding: 12px 18px; border-radius: 10px; font-size: 14px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.25);
+      pointer-events: all;
+      animation: toast-in .25s ease;
+    }
+    .toast.success { background: var(--green); }
+    .toast.error   { background: var(--red); }
+    .toast.warning { background: var(--amber); }
+    @keyframes toast-in { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+    /* ============================================================
+       AUTH DIALOG
+    ============================================================ */
+    #auth-dialog {
+  position: fixed; inset: 0;
+  background: var(--bg-app); /* Matches the app background immediately */
+  display: flex; align-items: center; justify-content: center;
+  border: none;
+  width: 100vw; height: 100vh; /* Force full screen */
+}
+    #auth-dialog[open] { display: flex; }
+    #signin-card {
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 48px; /* Increased padding for desktop feel */
+  width: 100%; 
+  max-width: 500px; /* Slightly wider for better desktop aesthetics */
+  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+}
+    .auth-logo {
+      text-align: center; margin-bottom: 24px;
+    }
+    .auth-logo .logo-icon {
+      width: 56px; height: 56px; background: var(--green);
+      border-radius: 16px; display: inline-flex;
+      align-items: center; justify-content: center;
+      font-size: 28px; margin-bottom: 10px;
+    }
+    .auth-logo h1 { font-size: 22px; font-weight: 800; color: var(--text); }
+    .auth-logo p  { font-size: 13px; color: var(--text-2); }
+    .auth-tabs {
+      display: flex; gap: 4px;
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      padding: 4px; margin-bottom: 22px;
+    }
+    .auth-tab {
+      flex: 1; padding: 9px; border-radius: 6px; border: none;
+      font-size: 14px; font-weight: 600; background: transparent;
+      color: var(--text-2); transition: all .2s;
+    }
+    .auth-tab.active {
+      background: var(--surface);
+      color: var(--green);
+      box-shadow: 0 1px 6px rgba(0,0,0,.08);
+    }
+    .pw-wrap { position: relative; }
+    .pw-toggle {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--text-3); font-size: 12px; font-weight: 600;
+    }
+    .pw-meter { height: 4px; border-radius: 2px; margin-top: 6px;
+      background: var(--border); overflow: hidden; }
+    .pw-meter-fill { height: 100%; border-radius: 2px; width: 0; transition: width .3s, background .3s; }
+    #auth-msg { font-size: 13px; margin-top: 10px; color: var(--red); min-height: 18px; }
+    .auth-link { background: none; border: none; color: var(--green); font-size: 13px; margin-top: 6px; }
+
+    /* ============================================================
+       APP SHELL
+    ============================================================ */
+    #app-shell { display: flex; min-height: 100vh; }
+
+    /* TOP NAV */
+    #topnav {
+      position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h);
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      z-index: 200; display: flex; align-items: center;
+      padding: 0 20px; gap: 16px;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; color: var(--text); }
+    .nav-brand .icon { width: 36px; height: 36px; background: var(--green); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .nav-spacer { flex: 1; }
+    #hamburger {
+      display: none; background: none; border: none;
+      flex-direction: column; gap: 5px; padding: 6px;
+    }
+    #hamburger span { width: 22px; height: 2px; background: var(--text); border-radius: 2px; display: block; transition: .3s; }
+    .nav-actions { display: flex; align-items: center; gap: 10px; }
+    .nav-user { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+    .avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--green);
+      color: #fff; display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; flex-shrink: 0; }
+
+    /* SIDEBAR */
+    #sidebar {
+      position: fixed; top: var(--nav-h); left: 0; bottom: 0;
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 16px 12px;
+      overflow-y: auto;
+      z-index: 150;
+      transition: transform .3s;
+    }
+    .sidebar-section { margin-bottom: 8px; }
+    .sidebar-label { font-size: 11px; font-weight: 700; color: var(--text-3);
+      text-transform: uppercase; letter-spacing: .08em; padding: 6px 12px; }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: var(--radius-sm);
+      border: none; background: none; width: 100%; text-align: left;
+      font-size: 14px; font-weight: 500; color: var(--text-2);
+      cursor: pointer; transition: all .18s;
+    }
+    .nav-item .icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+    .nav-item:hover { background: var(--surface-2); color: var(--text); }
+    /* Tab/Sidebar active state */
+.nav-item.active {
+  background: #EAF3FF; /* Light blue tint */
+  color: var(--primary-blue);
+}
+    .nav-item .nav-badge {
+      margin-left: auto; background: var(--red); color: #fff;
+      font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 99px;
+    }
+
+    /* MAIN CONTENT */
+    #main-content {
+      margin-left: var(--sidebar-w);
+      margin-top: var(--nav-h);
+      flex: 1; min-width: 0;
+      padding: 28px 28px 60px;
+    }
+
+    /* SECTIONS / VIEWS */
+    .view { display: none; animation: fade-in .2s ease; }
+    .view.active { display: block; }
+    @keyframes fade-in { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+    /* ============================================================
+       HOME / DASHBOARD
+    ============================================================ */
+    .home-hero {
+      background: linear-gradient(135deg, var(--green) 0%, #0A7EA4 100%);
+      border-radius: 20px; padding: 32px; color: #fff; margin-bottom: 24px;
+      position: relative; overflow: hidden;
+    }
+    .home-hero::after {
+      content: '🏥'; position: absolute; right: 24px; bottom: -10px;
+      font-size: 100px; opacity: .12;
+    }
+    .home-hero h2 { font-size: 26px; font-weight: 800; margin-bottom: 6px; }
+    .home-hero p  { font-size: 14px; opacity: .85; max-width: 380px; }
+    .quick-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; margin-bottom: 24px; }
+    .quick-card {
+      background: var(--surface); border-radius: var(--radius); padding: 18px 16px;
+      border: 1px solid var(--border); box-shadow: var(--shadow);
+      cursor: pointer; text-align: center; transition: all .2s;
+    }
+    .quick-card:hover { border-color: var(--green); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+    .quick-card .icon { font-size: 28px; margin-bottom: 8px; }
+    .quick-card .label { font-size: 12px; font-weight: 700; color: var(--text-2); }
+    .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 24px; }
+    .stat-card { background: var(--surface); border-radius: var(--radius); padding: 18px;
+      border: 1px solid var(--border); text-align: center; }
+    .stat-card .value { font-size: 28px; font-weight: 800; color: var(--green); }
+    .stat-card .name  { font-size: 12px; color: var(--text-2); margin-top: 2px; }
+
+    /* ============================================================
+       CLINIC FINDER
+    ============================================================ */
+    .clinic-search-row { display: flex; gap: 10px; margin-bottom: 20px; }
+    .clinic-search-row input { flex: 1; }
+    #map-container {
+      height: 320px; border-radius: var(--radius); overflow: hidden;
+      border: 1px solid var(--border); background: var(--surface-2);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-3); font-size: 14px; margin-bottom: 20px;
+    }
+    .clinic-list { display: flex; flex-direction: column; gap: 12px; }
+    .clinic-item {
+      background: var(--surface); border-radius: var(--radius); padding: 16px 18px;
+      border: 1px solid var(--border); display: flex; align-items: center; gap: 14px;
+      box-shadow: var(--shadow);
+    }
+    .clinic-icon { width: 44px; height: 44px; border-radius: 12px; background: var(--green-lt);
+      display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+    .clinic-info { flex: 1; }
+    .clinic-name { font-weight: 700; font-size: 15px; }
+    .clinic-meta { font-size: 13px; color: var(--text-2); margin-top: 2px; }
+
+    /* ============================================================
+       HEALTH TIPS
+    ============================================================ */
+    .tips-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .tip-card {
+      background: var(--surface); border-radius: var(--radius); padding: 20px;
+      border: 1px solid var(--border); box-shadow: var(--shadow);
+    }
+    .tip-card .tip-tag { font-size: 11px; font-weight: 700; color: var(--green); text-transform: uppercase;
+      letter-spacing: .06em; margin-bottom: 8px; }
+    .tip-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+    .tip-card p  { font-size: 13px; color: var(--text-2); }
+
+    /* ============================================================
+       SYMPTOM GUIDE (AI)
+    ============================================================ */
+    .symptom-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .symptom-chip {
+      padding: 6px 14px; border-radius: 99px; border: 1.5px solid var(--border);
+      background: var(--surface); font-size: 13px; cursor: pointer; font-weight: 500;
+      transition: all .18s;
+    }
+    .symptom-chip.selected { background: var(--green); color: #fff; border-color: var(--green); }
+    #symptom-result {
+      background: var(--green-lt); border-radius: var(--radius); padding: 20px;
+      border: 1px solid var(--border); margin-top: 20px; line-height: 1.7;
+      font-size: 14px;
+    }
+    #symptom-result h4 { font-weight: 700; color: var(--green-dk); margin-bottom: 10px; }
+
+    /* ============================================================
+       EMERGENCY CONTACTS
+    ============================================================ */
+    .emergency-banner {
+      background: linear-gradient(135deg, #DC2626 0%, #C2410C 100%);
+      border-radius: var(--radius); padding: 20px; color: #fff; margin-bottom: 20px;
+      display: flex; align-items: center; gap: 16px;
+    }
+    .emergency-banner .icon { font-size: 40px; }
+    .emergency-banner h3 { font-size: 18px; font-weight: 800; }
+    .emergency-banner p  { font-size: 13px; opacity: .9; }
+    .emergency-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+    .emg-card {
+      background: var(--surface); border-radius: var(--radius); padding: 18px;
+      border: 1px solid var(--border); box-shadow: var(--shadow); text-align: center;
+    }
+    .emg-card .icon { font-size: 32px; margin-bottom: 8px; }
+    .emg-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .emg-card .number { font-size: 22px; font-weight: 800; color: var(--red); letter-spacing: 1px; }
+    .emg-card p { font-size: 12px; color: var(--text-2); margin-top: 4px; }
+    .emg-card a.call-btn {
+      display: block; margin-top: 12px;
+      background: var(--red); color: #fff;
+      padding: 9px; border-radius: var(--radius-sm);
+      font-weight: 700; font-size: 13px;
+      transition: opacity .2s;
+    }
+    .emg-card a.call-btn:hover { opacity: .85; }
+
+    /* ============================================================
+       HEALTH CAMPAIGNS
+    ============================================================ */
+    .ticker-wrap {
+      background: var(--text); color: #fff; border-radius: var(--radius-sm);
+      overflow: hidden; padding: 10px 0; margin-bottom: 24px; position: relative;
+    }
+    .ticker { display: flex; white-space: nowrap; animation: ticker 30s linear infinite; }
+    .ticker-item { padding: 0 24px; font-size: 13px; }
+    @keyframes ticker { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+    .campaigns-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 18px; }
+    .campaign-card {
+      background: var(--surface); border-radius: var(--radius); padding: 22px;
+      border: 1px solid var(--border); box-shadow: var(--shadow);
+      border-top: 4px solid var(--green);
+    }
+    .campaign-card .c-tag { font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .06em; margin-bottom: 8px; color: var(--green); }
+    .campaign-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .campaign-card p  { font-size: 13px; color: var(--text-2); line-height: 1.6; }
+    .campaign-stats { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+    .stat-pill { background: var(--surface-2); border-radius: var(--radius-sm); padding: 6px 10px;
+      font-size: 11px; font-weight: 600; color: var(--text-2); text-align: center; }
+
+    /* ============================================================
+       USER PROFILE
+    ============================================================ */
+    .profile-header {
+      background: linear-gradient(135deg, var(--green) 0%, #0A7EA4 100%);
+      border-radius: 20px; padding: 28px; color: #fff; margin-bottom: 24px;
+      display: flex; align-items: center; gap: 20px;
+    }
+    .profile-avatar-lg {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: rgba(255,255,255,.25); border: 3px solid rgba(255,255,255,.6);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; font-weight: 800; color: #fff; flex-shrink: 0;
+    }
+    .profile-header h2 { font-size: 22px; font-weight: 800; }
+    .profile-header p  { font-size: 13px; opacity: .85; }
+    .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 640px) { .profile-grid { grid-template-columns: 1fr; } }
+
+    /* ============================================================
+       APPOINTMENTS
+    ============================================================ */
+    .appt-list { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+    .appt-item {
+      background: var(--surface); border-radius: var(--radius); padding: 16px 18px;
+      border: 1px solid var(--border); display: flex; align-items: center; gap: 14px;
+      box-shadow: var(--shadow);
+    }
+    .appt-date-box {
+      text-align: center; background: var(--green-lt); border-radius: var(--radius-sm);
+      padding: 8px 12px; min-width: 52px; flex-shrink: 0;
+    }
+    .appt-date-box .day   { font-size: 22px; font-weight: 800; color: var(--green); line-height: 1; }
+    .appt-date-box .month { font-size: 11px; font-weight: 700; color: var(--text-2); text-transform: uppercase; }
+    .appt-info { flex: 1; }
+    .appt-info h4 { font-weight: 700; font-size: 15px; }
+    .appt-info p  { font-size: 13px; color: var(--text-2); }
+
+    /* ============================================================
+       TELECONSULTATION
+    ============================================================ */
+    .tele-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+    .doctor-card {
+      background: var(--surface); border-radius: var(--radius); padding: 20px;
+      border: 1px solid var(--border); box-shadow: var(--shadow); text-align: center;
+    }
+    .doctor-card .doc-avatar {
+      width: 64px; height: 64px; border-radius: 50%; background: var(--green-lt);
+      margin: 0 auto 12px; display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+    }
+    .doctor-card h4 { font-weight: 700; font-size: 15px; }
+    .doctor-card .spec { font-size: 12px; color: var(--green); font-weight: 600; margin-bottom: 6px; }
+    .doctor-card .avail { font-size: 12px; color: var(--text-2); margin-bottom: 14px; }
+    .rating { color: #F59E0B; font-size: 13px; margin-bottom: 4px; }
+
+    /* ============================================================
+       CHATBOT / AI
+    ============================================================ */
+    .chat-wrap {
+      display: flex; flex-direction: column;
+      height: 480px; border-radius: var(--radius);
+      border: 1px solid var(--border); background: var(--surface);
+      overflow: hidden; box-shadow: var(--shadow);
+    }
+    .chat-header {
+      padding: 14px 18px; background: var(--green); color: #fff;
+      display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+    }
+    .chat-header h3 { font-size: 15px; font-weight: 700; }
+    .chat-header p  { font-size: 12px; opacity: .85; }
+    .chat-header .status-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #86EFAC;
+      box-shadow: 0 0 0 2px rgba(134,239,172,.3); margin-left: auto; flex-shrink: 0;
+    }
+    #chat-messages {
+      flex: 1; overflow-y: auto; padding: 16px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .msg { max-width: 80%; display: flex; gap: 8px; align-items: flex-end; }
+    .msg.user { flex-direction: row-reverse; align-self: flex-end; }
+    .msg.bot  { align-self: flex-start; }
+    .msg-bubble {
+      padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.55;
+    }
+    .msg.user .msg-bubble { background: var(--green); color: #fff; border-bottom-right-radius: 4px; }
+    .msg.bot  .msg-bubble { background: var(--surface-2); color: var(--text); border-bottom-left-radius: 4px; }
+    .msg-avatar {
+      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 14px;
+    }
+    .msg.bot  .msg-avatar { background: var(--green-lt); }
+    .msg.user .msg-avatar { background: var(--green); color: #fff; font-size: 12px; font-weight: 700; }
+    .chat-input-row {
+      padding: 12px 14px; border-top: 1px solid var(--border);
+      display: flex; gap: 8px; background: var(--surface); flex-shrink: 0;
+    }
+    .chat-input-row input { border-radius: 99px; }
+    .typing { display: flex; gap: 4px; align-items: center; padding: 10px 14px;
+      background: var(--surface-2); border-radius: 18px; width: fit-content; }
+    .typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--text-3);
+      animation: bounce .9s infinite; }
+    .typing span:nth-child(2) { animation-delay: .15s; }
+    .typing span:nth-child(3) { animation-delay: .30s; }
+    @keyframes bounce {
+      0%,60%,100% { transform: translateY(0); }
+      30% { transform: translateY(-6px); }
+    }
+
+    /* ============================================================
+       FAQs
+    ============================================================ */
+    .faq-list { display: flex; flex-direction: column; gap: 10px; }
+    .faq-item {
+      background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border);
+      overflow: hidden; box-shadow: var(--shadow);
+    }
+    .faq-q {
+      width: 100%; text-align: left; background: none; border: none;
+      padding: 16px 20px; font-size: 14px; font-weight: 600; color: var(--text);
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      cursor: pointer; transition: background .18s;
+    }
+    .faq-q:hover { background: var(--surface-2); }
+    .faq-q .chevron { font-size: 16px; transition: transform .3s; flex-shrink: 0; }
+    .faq-q.open .chevron { transform: rotate(180deg); }
+    .faq-a { max-height: 0; overflow: hidden; transition: max-height .35s ease; }
+    .faq-a.open { max-height: 300px; }
+    .faq-a-inner { padding: 0 20px 16px; font-size: 14px; color: var(--text-2); line-height: 1.7; }
+
+    /* ============================================================
+       PRIVACY POLICY
+    ============================================================ */
+    .policy-wrap { max-width: 720px; }
+    .policy-wrap h3 { font-size: 17px; font-weight: 700; margin: 24px 0 8px; color: var(--text); }
+    .policy-wrap p,
+    .policy-wrap li { font-size: 14px; color: var(--text-2); line-height: 1.75; }
+    .policy-wrap ul  { padding-left: 20px; margin-top: 6px; }
+    .policy-wrap li  { margin-bottom: 4px; }
+    .policy-effective { background: var(--green-lt); border-radius: var(--radius-sm);
+      padding: 10px 16px; font-size: 13px; color: var(--green-dk); font-weight: 600; margin-bottom: 20px; }
+
+    /* ============================================================
+       LOADING SPINNER
+    ============================================================ */
+    .spinner {
+      display: inline-block; width: 20px; height: 20px;
+      border: 2.5px solid rgba(255,255,255,.4);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin .6s linear infinite;
+    }
+    .spinner-green {
+      border: 2.5px solid var(--border);
+      border-top-color: var(--green);
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media (max-width: 768px) {
+      #hamburger { display: flex; }
+      #sidebar {
+        transform: translateX(-100%);
+      }
+      #sidebar.open { transform: translateX(0); box-shadow: 4px 0 20px rgba(0,0,0,.15); }
+      #main-content { margin-left: 0; padding: 20px 16px 60px; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      #overlay {
+        position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 140;
+        display: none;
+      }
+      #overlay.show { display: block; }
+    }
+    @media (max-width: 480px) {
+      .home-hero h2 { font-size: 20px; }
+      .stats-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===================== TOAST ===================== -->
+<div id="toast-region" aria-live="polite"></div>
+<div id="overlay"></div>
+
+<!-- ===================== AUTH DIALOG ===================== -->
+<dialog id="auth-dialog" open aria-labelledby="auth-title">
+  <div id="signin-card">
+    <div class="auth-logo">
+      <img src="logo.jpg" alt="HealthOnTheGo Logo"
+     style="width:80px;height:80px;object-fit:contain;margin:0 auto 10px;display:block;">
+      <h1 id="auth-title">HealthOnTheGo</h1>
+      <p>Your mobile health companion</p>
+    </div>
+
+    <div class="auth-tabs" role="tablist">
+      <button class="auth-tab active" id="tab-signin" role="tab" aria-selected="true">Sign In</button>
+      <button class="auth-tab" id="tab-register" role="tab" aria-selected="false">Register</button>
+    </div>
+
+    <!-- SIGN IN -->
+    <div id="form-signin">
+      <div class="field">
+        <label for="si-username">Username</label>
+        <input id="si-username" type="text" placeholder="Enter username" autocomplete="username">
+      </div>
+      <div class="field">
+        <label for="si-password">Password</label>
+        <div class="pw-wrap">
+          <input id="si-password" type="password" placeholder="Enter password" autocomplete="current-password">
+          <button class="pw-toggle" data-for="si-password" type="button">Show</button>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-block btn-lg" id="btn-signin">Sign In</button>
+      <button class="auth-link" id="btn-forgot" type="button">Forgot password?</button>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="form-register" class="hidden">
+      <div class="field">
+        <label for="reg-username">Username</label>
+        <input id="reg-username" type="text" placeholder="Choose a username">
+      </div>
+      <div class="field">
+        <label for="reg-email">Email</label>
+        <input id="reg-email" type="email" placeholder="Enter your email" autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="reg-password">Password</label>
+        <div class="pw-wrap">
+          <input id="reg-password" type="password" placeholder="Create a password" autocomplete="new-password">
+          <button class="pw-toggle" data-for="reg-password" type="button">Show</button>
+        </div>
+        <div class="pw-meter"><div id="pw-meter-fill" class="pw-meter-fill"></div></div>
+        <small id="pw-meter-text" style="font-size:12px;color:var(--text-3);">Password strength</small>
+      </div>
+      <div class="field">
+        <label for="reg-confirm">Confirm Password</label>
+        <input id="reg-confirm" type="password" placeholder="Confirm your password">
+      </div>
+      <button class="btn btn-primary btn-block btn-lg" id="btn-register">Create Account</button>
+    </div>
+
+    <!-- FORGOT PASSWORD -->
+    <div id="form-forgot" class="hidden">
+      <div class="field">
+        <label for="fp-username">Username</label>
+        <input id="fp-username" type="text" placeholder="Your username">
+      </div>
+      <div class="field">
+        <label for="fp-email">Email</label>
+        <input id="fp-email" type="email" placeholder="Your registered email">
+      </div>
+      <div class="field">
+        <label for="fp-new">New Password</label>
+        <div class="pw-wrap">
+          <input id="fp-new" type="password" placeholder="Create new password">
+          <button class="pw-toggle" data-for="fp-new" type="button">Show</button>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-block" id="btn-reset">Reset Password</button>
+      <button class="auth-link" id="btn-back-signin" type="button">← Back to sign in</button>
+    </div>
+
+    <p id="auth-msg"></p>
+  </div>
+</dialog>
+
+<!-- ===================== APP SHELL ===================== -->
+<div id="app-shell" class="hidden">
+
+  <!-- TOP NAV -->
+  <nav id="topnav">
+    <button id="hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-brand">
+      <div class="icon">
+  <img src="logo.jpg" alt="logo"
+       style="width:36px;height:36px;object-fit:contain;border-radius:8px;">
+</div>
+      HealthOnTheGo
+    </div>
+    <div class="nav-spacer"></div>
+    <div class="nav-actions">
+      <div class="nav-user">
+        <div class="avatar" id="nav-avatar">U</div>
+        <span id="nav-username" style="font-size:14px;font-weight:600;color:var(--text-2);"></span>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="btn-signout">Sign Out</button>
+    </div>
+  </nav>
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-label">Main</div>
+    <button class="nav-item active" data-view="home"><span class="icon">🏠</span> Dashboard</button>
+    <button class="nav-item" data-view="profile"><span class="icon">👤</span> My Profile</button>
+  </div>
+  
+  <div class="sidebar-section">
+    <div class="sidebar-label">Features</div>
+    <button class="nav-item" data-view="clinic-finder"><span class="icon">🗺️</span> Clinic Finder</button>
+    <button class="nav-item" data-view="health-tips"><span class="icon">💡</span> Health Tips</button>
+    <button class="nav-item" data-view="symptom-guide"><span class="icon">🔍</span> Symptom Guide</button>
+    <button class="nav-item" data-view="campaigns"><span class="icon">📢</span> Health Campaigns</button>
+    <button class="nav-item" data-view="emergency"><span class="icon">🚨</span> Emergency Contacts</button>
+    <button class="nav-item" data-view="teleconsult"><span class="icon">📹</span> Teleconsultation</button>
+    <button class="nav-item" data-view="appointments"><span class="icon">📅</span> Appointments</button>
+    <button class="nav-item" data-view="chatbot"><span class="icon">🤖</span> Health AI Chat</button>
+    <button class="nav-item" data-view="faqs"><span class="icon">❓</span> FAQs</button>
+    <button class="nav-item" data-view="privacy"><span class="icon">🔒</span> Privacy Policy</button>
+  </div>
+</aside>
+
+  <!-- MAIN CONTENT -->
+  <main id="main-content">
+
+    <!-- ======= HOME ======= -->
+    <section id="view-home" class="view active">
+      <div class="home-hero">
+        <div>
+          <h2 id="welcome-msg">Welcome back! 👋</h2>
+          <p>Your personalised health companion. Find clinics, get tips, and access care — anywhere.</p>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="value">12</div><div class="name">Health Tips</div></div>
+        <div class="stat-card"><div class="value">3</div><div class="name">Campaigns Active</div></div>
+        <div class="stat-card"><div class="value">24/7</div><div class="name">AI Chat Support</div></div>
+      </div>
+      <h3 style="font-size:16px;font-weight:700;margin-bottom:14px;">Quick Access</h3>
+      <div class="quick-grid">
+        <div class="quick-card" data-view="clinic-finder"><div class="icon">🗺️</div><div class="label">Clinic Finder</div></div>
+        <div class="quick-card" data-view="emergency"><div class="icon">🚨</div><div class="label">Emergency</div></div>
+        <div class="quick-card" data-view="symptom-guide"><div class="icon">🔍</div><div class="label">Symptom Guide</div></div>
+        <div class="quick-card" data-view="chatbot"><div class="icon">🤖</div><div class="label">AI Chat</div></div>
+        <div class="quick-card" data-view="teleconsult"><div class="icon">📹</div><div class="label">Teleconsult</div></div>
+        <div class="quick-card" data-view="appointments"><div class="icon">📅</div><div class="label">Appointments</div></div>
+      </div>
+    </section>
+
+    <!-- ======= USER PROFILE ======= -->
+    <section id="view-profile" class="view">
+      <div class="profile-header">
+        <div class="profile-avatar-lg" id="profile-avatar-lg">U</div>
+        <div>
+          <h2 id="profile-name-display">User</h2>
+          <p id="profile-email-display">user@example.com</p>
+          <span class="badge badge-green" style="margin-top:6px;">Active Member</span>
+        </div>
+      </div>
+      <div class="profile-grid">
+        <div class="card">
+          <h4 style="font-weight:700;margin-bottom:16px;">Personal Information</h4>
+          <div class="field"><label>Full Name</label><input id="pf-name" type="text" placeholder="Enter your full name"></div>
+          <div class="field"><label>Date of Birth</label><input id="pf-dob" type="date"></div>
+          <div class="field"><label>Phone Number</label><input id="pf-phone" type="tel" placeholder="+234 800 000 0000"></div>
+          <div class="field"><label>City / State</label><input id="pf-city" type="text" placeholder="e.g. Lagos, Nigeria"></div>
+          <button class="btn btn-primary" onclick="saveProfile()">Save Changes</button>
+        </div>
+        <div class="card">
+          <h4 style="font-weight:700;margin-bottom:16px;">Health Information</h4>
+          <div class="field"><label>Blood Group</label>
+            <select id="pf-blood">
+              <option value="">Select blood group</option>
+              <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+              <option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+            </select>
+          </div>
+          <div class="field"><label>Genotype</label>
+            <select id="pf-genotype">
+              <option value="">Select genotype</option>
+              <option>AA</option><option>AS</option><option>SS</option><option>AC</option>
+            </select>
+          </div>
+          <div class="field"><label>Known Allergies</label><input id="pf-allergies" type="text" placeholder="e.g. Penicillin, Peanuts"></div>
+          <div class="field"><label>Chronic Conditions</label><input id="pf-conditions" type="text" placeholder="e.g. Hypertension, Diabetes"></div>
+          <button class="btn btn-primary" onclick="saveProfile()">Save Health Info</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======= CLINIC FINDER ======= -->
+    <section id="view-clinic-finder" class="view">
+      <h2 class="section-title">Clinic Finder</h2>
+      <p class="section-sub">Locate nearby clinics, hospitals, and pharmacies.</p>
+      <div class="clinic-search-row">
+        <input id="clinic-search" type="text" placeholder="Search by name or area…">
+        <button class="btn btn-primary" onclick="searchClinics()">🔍 Search</button>
+        <button class="btn btn-outline" onclick="getMyLocation()">📍 Near Me</button>
+      </div>
+      <div id="map-container">
+        <div style="text-align:center;">
+          <div style="font-size:40px;margin-bottom:8px;">🗺️</div>
+          <div>Map loads after location permission is granted.</div>
+          <div style="font-size:12px;margin-top:4px;">Click "Near Me" to find clinics around you.</div>
+        </div>
+      </div>
+      <div id="clinic-list" class="clinic-list"></div>
+    </section>
+
+    <!-- ======= HEALTH TIPS ======= -->
+    <section id="view-health-tips" class="view">
+      <h2 class="section-title">Health Tips</h2>
+      <p class="section-sub">Evidence-based tips for a healthier life.</p>
+      <div class="tips-grid" id="tips-grid"></div>
+      <p style="font-size:12px;color:var(--text-3);margin-top:20px;">
+        Content adapted from <a href="https://odphp.health.gov/myhealthfinder" target="_blank" rel="noopener">MyHealthfinder (health.gov)</a>
+      </p>
+    </section>
+
+    <!-- ======= SYMPTOM GUIDE ======= -->
+    <section id="view-symptom-guide" class="view">
+      <h2 class="section-title">Symptom Guide</h2>
+      <p class="section-sub">Select your symptoms for AI-powered health guidance. Not a substitute for professional medical advice.</p>
+      <div class="card" style="margin-bottom:20px;">
+        <h4 style="font-weight:700;margin-bottom:12px;">Common Symptoms — tap to select</h4>
+        <div class="symptom-chips" id="symptom-chips"></div>
+        <div class="field" style="margin-top:16px;">
+          <label for="symptom-other">Describe additional symptoms</label>
+          <textarea id="symptom-other" rows="3" placeholder="e.g. I've had a persistent cough for 3 days with mild fever…"></textarea>
+        </div>
+        <button class="btn btn-primary" id="btn-get-guidance" onclick="getSymptomGuidance()">
+          Get AI Guidance
+        </button>
+      </div>
+      <div id="symptom-result" class="hidden"></div>
+    </section>
+
+    <!-- ======= EMERGENCY CONTACTS ======= -->
+    <section id="view-emergency" class="view">
+      <h2 class="section-title">Emergency Contacts</h2>
+      <p class="section-sub">One-tap access to emergency numbers. Available even in low connectivity.</p>
+      <div class="emergency-banner">
+        <div class="icon">🚨</div>
+        <div>
+          <h3>In a life-threatening emergency</h3>
+          <p>Call 112 or go to your nearest hospital immediately.</p>
+        </div>
+        <a href="tel:112" class="btn btn-danger btn-lg" style="margin-left:auto;white-space:nowrap;">Call 112</a>
+      </div>
+      <div class="emergency-grid" id="emg-grid"></div>
+    </section>
+
+    <!-- ======= HEALTH CAMPAIGNS ======= -->
+    <section id="view-campaigns" class="view">
+      <h2 class="section-title">Health Campaigns</h2>
+      <p class="section-sub">Active campaigns in Nigeria — stay informed and get screened.</p>
+      <div class="ticker-wrap">
+        <div class="ticker">
+          <span class="ticker-item">🦟 Malaria Awareness: Geneith Health youth competition — March 2026</span>
+          <span class="ticker-item">🩸 World Blood Cancer Day: Free screenings at teaching hospitals — March 2026</span>
+          <span class="ticker-item">💊 National Immunization Plus Days: Polio vaccination drive — Q1 2026</span>
+          <span class="ticker-item">🧠 Mental Health: "#YouAreNotAlone" campaign — ongoing March 2026</span>
+          <span class="ticker-item">🦟 Malaria Awareness: Geneith Health youth competition — March 2026</span>
+          <span class="ticker-item">🩸 World Blood Cancer Day: Free screenings at teaching hospitals — March 2026</span>
+          <span class="ticker-item">💊 National Immunization Plus Days: Polio vaccination drive — Q1 2026</span>
+          <span class="ticker-item">🧠 Mental Health: "#YouAreNotAlone" campaign — ongoing March 2026</span>
+        </div>
+      </div>
+      <div class="campaigns-grid" id="campaigns-grid"></div>
+    </section>
+
+    <!-- ======= PRIVACY POLICY ======= -->
+    <section id="view-privacy" class="view">
+      <h2 class="section-title">Privacy Policy</h2>
+      <p class="section-sub">How we handle your data.</p>
+      <div class="policy-wrap card">
+        <div class="policy-effective">Effective Date: 1 March 2026 | Version 1.0</div>
+        <p>HealthOnTheGo ("we", "our", or "us") is committed to protecting your personal information. This Privacy Policy explains what data we collect, how we use it, and your rights.</p>
+
+        <h3>1. Information We Collect</h3>
+        <ul>
+          <li><strong>Account data:</strong> username, email address, and password (hashed).</li>
+          <li><strong>Health profile:</strong> blood group, genotype, allergies, and chronic conditions — only if you voluntarily provide them.</li>
+          <li><strong>Location data:</strong> approximate device location, used solely to show nearby clinics. We do not store your location history.</li>
+          <li><strong>Usage data:</strong> pages visited, features used, and session duration — collected anonymously to improve the app.</li>
+          <li><strong>Appointment data:</strong> name, specialty, and chosen date/time for appointments you book through the app.</li>
+        </ul>
+
+        <h3>2. How We Use Your Information</h3>
+        <ul>
+          <li>To provide and personalise the HealthOnTheGo service.</li>
+          <li>To show clinics near your current location (location never stored).</li>
+          <li>To send appointment confirmations and reminders.</li>
+          <li>To improve app features based on anonymised usage patterns.</li>
+          <li>To comply with applicable health and data-protection laws.</li>
+        </ul>
+
+        <h3>3. AI-Powered Features</h3>
+        <p>The Symptom Guide and Health AI Chat use the Anthropic Claude API. Symptom and chat inputs are transmitted to Anthropic's servers to generate responses. We do not store the content of your AI conversations beyond your current session. Please do not share identifying personal or medical details you wish to remain completely private.</p>
+
+        <h3>4. Data Sharing</h3>
+        <p>We do not sell your personal data. We may share data only:</p>
+        <ul>
+          <li>With service providers (e.g. maps, AI) under strict data-processing agreements.</li>
+          <li>When required by Nigerian law or a valid court order.</li>
+          <li>With your explicit consent.</li>
+        </ul>
+
+        <h3>5. Data Security</h3>
+        <p>We implement industry-standard security measures including HTTPS encryption, hashed passwords, and access controls. However, no system is 100% secure — use a strong, unique password.</p>
+
+        <h3>6. Your Rights</h3>
+        <ul>
+          <li>Access, correct, or delete your account data at any time via My Profile.</li>
+          <li>Request a copy of your data by contacting us.</li>
+          <li>Withdraw consent for optional data collection.</li>
+        </ul>
+
+        <h3>7. Children's Privacy</h3>
+        <p>HealthOnTheGo is not directed at children under 13. If you believe a child has registered, contact us immediately.</p>
+
+        <h3>8. Changes to This Policy</h3>
+        <p>We may update this policy periodically. We will notify you via the app when significant changes occur.</p>
+
+        <h3>9. Contact Us</h3>
+        <p>For privacy questions or requests: <a href="mailto:privacy@healthonthego.ng">privacy@healthonthego.ng</a></p>
+      </div>
+    </section>
+
+    <!-- ======= TELECONSULTATION ======= -->
+    <section id="view-teleconsult" class="view">
+      <h2 class="section-title">Teleconsultation</h2>
+      <p class="section-sub">Book a video or phone consultation with a licensed doctor.</p>
+      <div class="card" style="margin-bottom:24px;background:linear-gradient(135deg,var(--teal) 0%,#0D9B6B 100%);color:#fff;border:none;">
+        <div style="display:flex;align-items:center;gap:16px;">
+          <div style="font-size:40px;">📹</div>
+          <div>
+            <h3 style="color:#fff;font-weight:800;">Next Available: Today, 2:00 PM</h3>
+            <p style="opacity:.85;font-size:13px;">Video consultations typically 15–30 minutes. Follow-ups available.</p>
+          </div>
+          <button class="btn" style="margin-left:auto;background:#fff;color:var(--teal);font-weight:700;white-space:nowrap;" onclick="bookTeleconsult()">Book Now</button>
+        </div>
+      </div>
+      <h3 style="font-size:16px;font-weight:700;margin-bottom:16px;">Available Doctors</h3>
+      <div class="tele-grid" id="doctors-grid"></div>
+    </section>
+
+    <!-- ======= APPOINTMENTS ======= -->
+    <section id="view-appointments" class="view">
+      <h2 class="section-title">Appointment Scheduling</h2>
+      <p class="section-sub">Book and manage your clinic appointments.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <div class="card">
+          <h4 style="font-weight:700;margin-bottom:16px;">Book New Appointment</h4>
+          <div class="field"><label>Full Name</label><input id="appt-name" type="text" placeholder="Your full name"></div>
+          <div class="field"><label>Specialty</label>
+            <select id="appt-specialty">
+              <option value="">Choose specialty</option>
+              <option>General Physician</option><option>Pediatrics</option>
+              <option>Gynaecology</option><option>Dermatology</option>
+              <option>Cardiology</option><option>Ophthalmology</option>
+              <option>Dentistry</option><option>Mental Health</option>
+            </select>
+          </div>
+          <div class="field"><label>Preferred Date</label><input id="appt-date" type="date"></div>
+          <div class="field"><label>Preferred Time</label><input id="appt-time" type="time"></div>
+          <div class="field"><label>Notes (optional)</label><textarea id="appt-notes" rows="2" placeholder="Any additional info for the doctor…"></textarea></div>
+          <button class="btn btn-primary btn-block" onclick="bookAppointment()">Book Appointment</button>
+          <p id="appt-msg" style="font-size:13px;margin-top:10px;color:var(--green);"></p>
+        </div>
+        <div>
+          <h4 style="font-size:16px;font-weight:700;margin-bottom:14px;">Your Appointments</h4>
+          <div id="appt-list" class="appt-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======= AI CHATBOT ======= -->
+    <section id="view-chatbot" class="view">
+      <h2 class="section-title">Health AI Chat</h2>
+      <p class="section-sub">Ask our AI health assistant any health question. For emergencies, call 112.</p>
+      <div class="chat-wrap">
+        <div class="chat-header">
+          <div style="font-size:22px;">🤖</div>
+          <div>
+            <h3>HealthBot</h3>
+            <p>Powered by Claude AI · Not a substitute for medical advice</p>
+          </div>
+          <div class="status-dot"></div>
+        </div>
+        <div id="chat-messages">
+          <div class="msg bot">
+            <div class="msg-avatar">🤖</div>
+            <div class="msg-bubble">Hi! I'm HealthBot, your AI health assistant. I can answer general health questions, explain symptoms, and help you navigate healthcare services. How can I help you today?</div>
+          </div>
+        </div>
+        <div class="chat-input-row">
+          <input id="chat-input" type="text" placeholder="Ask a health question…" autocomplete="off">
+          <button class="btn btn-primary" id="btn-chat-send" onclick="sendChat()">Send</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======= FAQs ======= -->
+    <section id="view-faqs" class="view">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <p class="section-sub">Quick answers to common questions about HealthOnTheGo.</p>
+      <div class="faq-list" id="faq-list"></div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ===================== SCRIPTS ===================== -->
+<script>
+/* ============================================================
+   STATE
+============================================================ */
+let currentUser = null;
+let chatHistory = [];
+let appointments = [];
+let profileData = {};
+
+/* ============================================================
+   UTILS
+============================================================ */
+function toast(msg, type = '') {
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.textContent = msg;
+  document.getElementById('toast-region').appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const v = document.getElementById('view-' + id);
+  if (v) v.classList.add('active');
+  document.querySelectorAll('.nav-item[data-view="' + id + '"]').forEach(n => n.classList.add('active'));
+  // Close sidebar on mobile
+  if (window.innerWidth <= 768) closeSidebar();
+  // Lazy-load section data
+  if (id === 'health-tips')    renderHealthTips();
+  if (id === 'campaigns')      renderCampaigns();
+  if (id === 'emergency')      renderEmergency();
+  if (id === 'faqs')           renderFAQs();
+  if (id === 'clinic-finder')  renderSampleClinics();
+  if (id === 'teleconsult')    renderDoctors();
+  if (id === 'appointments')   renderAppointments();
+  if (id === 'symptom-guide')  renderSymptomChips();
+  if (id === 'profile')        loadProfile();
+}
+
+/* ============================================================
+   SIDEBAR / HAMBURGER
+============================================================ */
+document.getElementById('hamburger').addEventListener('click', () => {
+  const s = document.getElementById('sidebar');
+  const o = document.getElementById('overlay');
+  s.classList.toggle('open');
+  o.classList.toggle('show');
+});
+document.getElementById('overlay').addEventListener('click', closeSidebar);
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+document.querySelectorAll('.nav-item[data-view]').forEach(btn => {
+  btn.addEventListener('click', () => showView(btn.dataset.view));
+});
+document.querySelectorAll('.quick-card[data-view]').forEach(c => {
+  c.addEventListener('click', () => showView(c.dataset.view));
+});
+
+/* ============================================================
+   AUTH
+============================================================ */
+// Tab toggle
+document.getElementById('tab-signin').addEventListener('click', () => switchAuthTab('signin'));
+document.getElementById('tab-register').addEventListener('click', () => switchAuthTab('register'));
+document.getElementById('btn-forgot').addEventListener('click', () => switchAuthTab('forgot'));
+document.getElementById('btn-back-signin').addEventListener('click', () => switchAuthTab('signin'));
+
+function switchAuthTab(tab) {
+  ['signin','register','forgot'].forEach(t => {
+    document.getElementById('form-' + t).classList.add('hidden');
+    const btn = document.getElementById('tab-' + t);
+    if (btn) { btn.classList.remove('active'); btn.setAttribute('aria-selected', 'false'); }
+  });
+  document.getElementById('form-' + tab).classList.remove('hidden');
+  const activeBtn = document.getElementById('tab-' + tab);
+  if (activeBtn) { activeBtn.classList.add('active'); activeBtn.setAttribute('aria-selected', 'true'); }
+  document.getElementById('auth-msg').textContent = '';
+}
+
+// Password toggles
+document.querySelectorAll('.pw-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const inp = document.getElementById(btn.dataset.for);
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    btn.textContent = inp.type === 'password' ? 'Show' : 'Hide';
+  });
+});
+
+// Password strength
+document.getElementById('reg-password').addEventListener('input', function() {
+  const v = this.value;
+  let score = 0;
+  if (v.length >= 8)  score++;
+  if (/[A-Z]/.test(v)) score++;
+  if (/[0-9]/.test(v)) score++;
+  if (/[^A-Za-z0-9]/.test(v)) score++;
+  const fill = document.getElementById('pw-meter-fill');
+  const text = document.getElementById('pw-meter-text');
+  const colors = ['','#EF4444','#F59E0B','#3B82F6','#10B981'];
+  const labels = ['','Weak','Fair','Good','Strong'];
+  fill.style.width = (score * 25) + '%';
+  fill.style.background = colors[score] || '';
+  text.textContent = score ? 'Strength: ' + labels[score] : 'Password strength';
+});
+
+// Sign In
+document.getElementById('btn-signin').addEventListener('click', async () => {
+  const u = document.getElementById('si-username').value.trim();
+  const p = document.getElementById('si-password').value;
+  const msg = document.getElementById('auth-msg');
+  if (!u || !p) { msg.textContent = 'Please fill in all fields.'; return; }
+
+  // Try backend first, fall back to localStorage demo
+  try {
+    const res = await fetch('http://localhost:3000/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: u, password: p })
+    });
+    const data = await res.json();
+    if (res.ok) { loginSuccess(data.user || { username: u }); return; }
+    msg.textContent = data.message || 'Invalid credentials.';
+  } catch {
+    // Offline / no backend — demo mode
+    const stored = JSON.parse(localStorage.getItem('hotg_users') || '{}');
+    if (stored[u] && stored[u].password === btoa(p)) {
+      loginSuccess({ username: u, email: stored[u].email });
+    } else {
+      msg.textContent = 'Invalid username or password.';
+    }
+  }
+});
+
+// Register
+document.getElementById('btn-register').addEventListener('click', async () => {
+  const u = document.getElementById('reg-username').value.trim();
+  const e = document.getElementById('reg-email').value.trim();
+  const p = document.getElementById('reg-password').value;
+  const c = document.getElementById('reg-confirm').value;
+  const msg = document.getElementById('auth-msg');
+  if (!u || !e || !p || !c) { msg.textContent = 'Please fill in all fields.'; return; }
+  if (p !== c) { msg.textContent = 'Passwords do not match.'; return; }
+  if (p.length < 6) { msg.textContent = 'Password must be at least 6 characters.'; return; }
+
+  try {
+    const res = await fetch('http://localhost:3000/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: u, email: e, password: p })
+    });
+    const data = await res.json();
+    if (res.ok) { toast('Account created! Please sign in.', 'success'); switchAuthTab('signin'); return; }
+    msg.textContent = data.message || 'Registration failed.';
+  } catch {
+    // Demo mode
+    const stored = JSON.parse(localStorage.getItem('hotg_users') || '{}');
+    if (stored[u]) { msg.textContent = 'Username already taken.'; return; }
+    stored[u] = { email: e, password: btoa(p) };
+    localStorage.setItem('hotg_users', JSON.stringify(stored));
+    toast('Account created! Please sign in.', 'success');
+    switchAuthTab('signin');
+  }
+});
+
+// Reset password
+document.getElementById('btn-reset').addEventListener('click', () => {
+  const u = document.getElementById('fp-username').value.trim();
+  const e = document.getElementById('fp-email').value.trim();
+  const p = document.getElementById('fp-new').value;
+  const msg = document.getElementById('auth-msg');
+  if (!u || !e || !p) { msg.textContent = 'Please fill in all fields.'; return; }
+  const stored = JSON.parse(localStorage.getItem('hotg_users') || '{}');
+  if (!stored[u] || stored[u].email !== e) { msg.textContent = 'Username or email not found.'; return; }
+  stored[u].password = btoa(p);
+  localStorage.setItem('hotg_users', JSON.stringify(stored));
+  toast('Password reset! Please sign in.', 'success');
+  switchAuthTab('signin');
+});
+
+function loginSuccess(user) {
+  currentUser = user;
+  localStorage.setItem('hotg_session', JSON.stringify(user));
+  document.getElementById('auth-dialog').close();
+  document.getElementById('auth-dialog').classList.add('hidden');
+  document.getElementById('app-shell').classList.remove('hidden');
+  const initials = user.username.slice(0,2).toUpperCase();
+  document.getElementById('nav-avatar').textContent = initials;
+  document.getElementById('nav-username').textContent = user.username;
+  document.getElementById('welcome-msg').textContent = 'Welcome back, ' + user.username + '! 👋';
+  document.getElementById('profile-name-display').textContent = user.username;
+  document.getElementById('profile-email-display').textContent = user.email || '';
+  document.getElementById('profile-avatar-lg').textContent = initials;
+  loadProfileFromStorage();
+  toast('Signed in successfully!', 'success');
+}
+
+document.getElementById('btn-signout').addEventListener('click', () => {
+  currentUser = null;
+  chatHistory = [];
+  localStorage.removeItem('hotg_session');
+  document.getElementById('app-shell').classList.add('hidden');
+  const dlg = document.getElementById('auth-dialog');
+  dlg.classList.remove('hidden');
+  dlg.showModal ? dlg.showModal() : dlg.setAttribute('open', '');
+  toast('Signed out.');
+});
+
+// Auto-login from session
+window.addEventListener('DOMContentLoaded', () => {
+  const sess = localStorage.getItem('hotg_session');
+  if (sess) {
+    try { loginSuccess(JSON.parse(sess)); } catch {}
+  }
+});
+
+/* ============================================================
+   PROFILE
+============================================================ */
+function loadProfileFromStorage() {
+  const data = JSON.parse(localStorage.getItem('hotg_profile_' + currentUser.username) || '{}');
+  profileData = data;
+}
+function loadProfile() {
+  const d = profileData;
+  if (d.name)       document.getElementById('pf-name').value       = d.name;
+  if (d.dob)        document.getElementById('pf-dob').value        = d.dob;
+  if (d.phone)      document.getElementById('pf-phone').value      = d.phone;
+  if (d.city)       document.getElementById('pf-city').value       = d.city;
+  if (d.blood)      document.getElementById('pf-blood').value      = d.blood;
+  if (d.genotype)   document.getElementById('pf-genotype').value   = d.genotype;
+  if (d.allergies)  document.getElementById('pf-allergies').value  = d.allergies;
+  if (d.conditions) document.getElementById('pf-conditions').value = d.conditions;
+}
+function saveProfile() {
+  profileData = {
+    name:       document.getElementById('pf-name').value,
+    dob:        document.getElementById('pf-dob').value,
+    phone:      document.getElementById('pf-phone').value,
+    city:       document.getElementById('pf-city').value,
+    blood:      document.getElementById('pf-blood').value,
+    genotype:   document.getElementById('pf-genotype').value,
+    allergies:  document.getElementById('pf-allergies').value,
+    conditions: document.getElementById('pf-conditions').value,
+  };
+  localStorage.setItem('hotg_profile_' + currentUser.username, JSON.stringify(profileData));
+  if (profileData.name) {
+    document.getElementById('profile-name-display').textContent = profileData.name;
+  }
+  toast('Profile saved!', 'success');
+}
+
+/* ============================================================
+   CLINIC FINDER
+============================================================ */
+const SAMPLE_CLINICS = [
+  { name: 'City Medical Centre', type: 'Hospital', dist: '0.4 km', open: 'Open 24/7', icon: '🏥', phone: '+234 1 234 5678' },
+  { name: 'LifeCare Pharmacy',   type: 'Pharmacy', dist: '0.7 km', open: 'Open · Closes 10 PM', icon: '💊', phone: '+234 1 234 9876' },
+  { name: 'Primary Health Clinic', type: 'Clinic', dist: '1.1 km', open: 'Open · Closes 5 PM', icon: '🏨', phone: '+234 1 456 1234' },
+  { name: 'Lagos Eye Centre',    type: 'Specialist', dist: '2.2 km', open: 'Open · Mon–Sat', icon: '👁️', phone: '+234 1 789 0000' },
+];
+
+function renderSampleClinics() {
+  const el = document.getElementById('clinic-list');
+  el.innerHTML = SAMPLE_CLINICS.map(c => `
+    <div class="clinic-item">
+      <div class="clinic-icon">${c.icon}</div>
+      <div class="clinic-info">
+        <div class="clinic-name">${c.name}</div>
+        <div class="clinic-meta">${c.type} · ${c.dist} · ${c.open}</div>
+      </div>
+      <a href="tel:${c.phone}" class="btn btn-outline btn-sm">📞 Call</a>
+    </div>
+  `).join('');
+}
+
+function searchClinics() {
+  const q = document.getElementById('clinic-search').value.toLowerCase();
+  const filtered = SAMPLE_CLINICS.filter(c =>
+    c.name.toLowerCase().includes(q) || c.type.toLowerCase().includes(q)
+  );
+  const el = document.getElementById('clinic-list');
+  if (!filtered.length) { el.innerHTML = '<p style="color:var(--text-3);font-size:14px;">No results found.</p>'; return; }
+  el.innerHTML = filtered.map(c => `
+    <div class="clinic-item">
+      <div class="clinic-icon">${c.icon}</div>
+      <div class="clinic-info">
+        <div class="clinic-name">${c.name}</div>
+        <div class="clinic-meta">${c.type} · ${c.dist} · ${c.open}</div>
+      </div>
+      <a href="tel:${c.phone}" class="btn btn-outline btn-sm">📞 Call</a>
+    </div>
+  `).join('');
+}
+
+function getMyLocation() {
+  if (!navigator.geolocation) { toast('Geolocation not supported.', 'error'); return; }
+  navigator.geolocation.getCurrentPosition(pos => {
+    toast('Location found! Showing nearby clinics.', 'success');
+    renderSampleClinics();
+    document.getElementById('map-container').innerHTML = `
+      <div style="text-align:center;padding:20px;">
+        <div style="font-size:40px;">📍</div>
+        <div style="font-weight:700;margin-top:8px;">Your location found</div>
+        <div style="font-size:12px;color:var(--text-3);margin-top:4px;">
+          ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}
+        </div>
+        <div style="font-size:13px;margin-top:8px;color:var(--text-2);">
+          Google Maps will load once a Maps API key is configured in the backend.
+        </div>
+      </div>`;
+  }, () => toast('Could not get your location.', 'error'));
+}
+
+/* ============================================================
+   HEALTH TIPS
+============================================================ */
+const TIPS = [
+  { tag: 'Nutrition',    title: 'Drink 8 Glasses of Water Daily',    body: 'Staying hydrated helps regulate body temperature, supports organ function, and keeps your skin healthy.' },
+  { tag: 'Prevention',  title: 'Wash Your Hands Frequently',         body: 'Regular handwashing with soap for at least 20 seconds significantly reduces the spread of infections.' },
+  { tag: 'Fitness',     title: 'Walk 30 Minutes Every Day',          body: 'A daily 30-minute walk reduces the risk of heart disease, improves mood, and boosts energy levels.' },
+  { tag: 'Sleep',       title: 'Aim for 7–9 Hours of Sleep',         body: 'Quality sleep is essential for immune function, mental health, and physical recovery.' },
+  { tag: 'Mental Health', title: 'Practice Deep Breathing',          body: 'Deep breathing exercises help reduce stress hormones and promote a sense of calm in minutes.' },
+  { tag: 'Nutrition',   title: 'Eat More Fruits and Vegetables',     body: 'A diet rich in fruits and vegetables lowers the risk of chronic diseases and boosts immunity.' },
+  { tag: 'Prevention',  title: 'Know Your Health Numbers',           body: 'Regularly check blood pressure, blood sugar, BMI, and cholesterol. Early detection saves lives.' },
+  { tag: 'Maternal',    title: 'Attend Antenatal Care Early',        body: 'Early antenatal visits help detect complications, ensure proper nutrition, and protect mother and baby.' },
+  { tag: 'Child Health', title: 'Vaccinate Your Child on Schedule',  body: 'Immunisation is one of the most effective ways to prevent childhood diseases like measles and polio.' },
+  { tag: 'Safety',      title: 'Wear Your Seatbelt Every Trip',      body: 'Road traffic injuries are a leading cause of death. Wearing a seatbelt reduces fatality risk by 45%.' },
+  { tag: 'Mental Health', title: 'Reach Out When You Struggle',      body: 'Talking to someone you trust or a professional is a sign of strength, not weakness.' },
+  { tag: 'Hygiene',     title: 'Cover Coughs and Sneezes',           body: 'Use a tissue or your elbow — never your hands — to prevent spreading respiratory infections.' },
+];
+
+function renderHealthTips() {
+  const el = document.getElementById('tips-grid');
+  if (el.children.length) return;
+  el.innerHTML = TIPS.map(t => `
+    <div class="tip-card">
+      <div class="tip-tag">${t.tag}</div>
+      <h3>${t.title}</h3>
+      <p>${t.body}</p>
+    </div>
+  `).join('');
+}
+
+/* ============================================================
+   SYMPTOM GUIDE (Claude API)
+============================================================ */
+const COMMON_SYMPTOMS = [
+  'Fever','Headache','Cough','Sore Throat','Fatigue',
+  'Nausea','Vomiting','Diarrhea','Chest Pain','Shortness of Breath',
+  'Rash','Joint Pain','Back Pain','Dizziness','Loss of Appetite'
+];
+let selectedSymptoms = new Set();
+
+function renderSymptomChips() {
+  const el = document.getElementById('symptom-chips');
+  if (el.children.length) return;
+  el.innerHTML = COMMON_SYMPTOMS.map(s => `
+    <button class="symptom-chip" onclick="toggleSymptom(this, '${s}')">${s}</button>
+  `).join('');
+}
+
+function toggleSymptom(el, name) {
+  if (selectedSymptoms.has(name)) { selectedSymptoms.delete(name); el.classList.remove('selected'); }
+  else { selectedSymptoms.add(name); el.classList.add('selected'); }
+}
+
+async function getSymptomGuidance() {
+  const extra = document.getElementById('symptom-other').value.trim();
+  const chips = [...selectedSymptoms];
+  if (!chips.length && !extra) { toast('Please select at least one symptom.', 'warning'); return; }
+
+  const btn = document.getElementById('btn-get-guidance');
+  btn.innerHTML = '<div class="spinner"></div> Analysing…';
+  btn.disabled = true;
+
+  const prompt = `You are a health assistant for HealthOnTheGo, a mobile app for users in Nigeria and Africa.
+A user has selected the following symptoms: ${chips.join(', ')}.${extra ? ' Additional description: ' + extra : ''}
+
+Provide:
+1. Possible causes (list 2-3 likely conditions)
+2. Self-care advice for each
+3. When to see a doctor urgently
+4. When this might be an emergency (if applicable)
+
+Be concise, clear, and compassionate. Format with short headings. Add a disclaimer at the end that this is not a substitute for professional medical advice.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01', 'x-api-key': '' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.[0]?.text || 'No response received.';
+    document.getElementById('symptom-result').innerHTML = '<h4>🩺 AI Health Guidance</h4>' + markdownToHtml(text);
+    document.getElementById('symptom-result').classList.remove('hidden');
+  } catch (e) {
+    // Demo fallback
+    document.getElementById('symptom-result').innerHTML = `<h4>🩺 AI Health Guidance</h4>
+      <p><strong>Symptoms noted:</strong> ${chips.join(', ')}${extra ? ', ' + extra : ''}</p>
+      <p style="margin-top:10px;"><em>Note: Live AI guidance requires the API to be configured. Below is sample guidance:</em></p>
+      <p style="margin-top:10px;"><strong>Possible causes:</strong> These symptoms may suggest a common cold, flu, or mild infection. In some cases, they could indicate malaria, which is common in Nigeria.</p>
+      <p style="margin-top:10px;"><strong>Self-care:</strong> Rest well, drink plenty of fluids, and monitor your temperature. Over-the-counter paracetamol can help with fever and pain.</p>
+      <p style="margin-top:10px;"><strong>See a doctor if:</strong> Fever exceeds 39°C, symptoms persist beyond 3 days, or you have difficulty breathing.</p>
+      <p style="margin-top:10px;"><strong>⚕️ Disclaimer:</strong> This is not a substitute for professional medical advice, diagnosis, or treatment.</p>`;
+    document.getElementById('symptom-result').classList.remove('hidden');
+  }
+
+  btn.innerHTML = 'Get AI Guidance';
+  btn.disabled = false;
+}
+
+/* ============================================================
+   EMERGENCY CONTACTS
+============================================================ */
+const EMERGENCY_CONTACTS = [
+  { icon: '🚑', name: 'Ambulance / NEMA', number: '112', desc: 'National emergency line — free to call' },
+  { icon: '🚔', name: 'Police', number: '199', desc: 'Nigeria Police Force emergency line' },
+  { icon: '🔥', name: 'Fire Service', number: '193', desc: 'Federal Fire Service' },
+  { icon: '🧠', name: 'Mental Health Crisis', number: '0800-SAFELINE', desc: 'Safeline Nigeria — free counselling' },
+  { icon: '☠️', name: 'Poison Control', number: '0700-POISON', desc: 'National Poison Control Centre' },
+  { icon: '🍼', name: 'Child Protection', number: '08000-550-550', desc: 'Child Helpline — free, 24/7' },
+  { icon: '🏥', name: 'NCDC (Disease Control)', number: '0800-970-0010', desc: 'Nigeria CDC hotline — disease alerts' },
+  { icon: '🩸', name: 'Blood Bank (Lagos)', number: '+234 1 461 9073', desc: 'Lagos State Blood Transfusion Service' },
+];
+
+function renderEmergency() {
+  const el = document.getElementById('emg-grid');
+  if (el.children.length) return;
+  el.innerHTML = EMERGENCY_CONTACTS.map(c => `
+    <div class="emg-card">
+      <div class="icon">${c.icon}</div>
+      <h4>${c.name}</h4>
+      <div class="number">${c.number}</div>
+      <p>${c.desc}</p>
+      <a href="tel:${c.number}" class="call-btn">📞 Call Now</a>
+    </div>
+  `).join('');
+}
+
+/* ============================================================
+   CAMPAIGNS
+============================================================ */
+const CAMPAIGNS = [
+  {
+    color: '#E63946', tag: 'FEATURED', icon: '🫁',
+    title: 'World Tuberculosis Day — "Check Am O" Campaign',
+    date: 'March 2026',
+    desc: 'Nigeria marks World TB Day urging citizens to get tested. TB remains one of Nigeria\'s top infectious disease killers. Free TB screening is available at government health centres nationwide.',
+    stats: ['400,000+ new TB cases yearly', '6th highest TB burden globally', 'Free treatment at public hospitals'],
+    link: 'https://www.tbfacts.org/tb-nigeria/'
+  },
+  {
+    color: '#0077B6', tag: 'NATIONWIDE', icon: '🩺',
+    title: '#KnowYourNumbers Campaign',
+    date: 'Ongoing — March 2026',
+    desc: 'A nationwide push to monitor blood pressure, blood sugar, BMI, and HIV status. Early detection saves lives. Visit any Primary Health Care centre for a free check.',
+    stats: ['1 in 3 has high blood pressure', '1 in 12 has diabetes', 'Free screening at all PHCs'],
+    link: 'https://www.health.gov.ng'
+  },
+  {
+    color: '#2DC653', tag: 'RURAL FOCUS', icon: '🏥',
+    title: 'NYSC Health Initiative for Rural Dwellers (HIRD)',
+    date: 'Q1 2026 — Ongoing',
+    desc: 'NYSC brings free medical outreaches, consultations, and medications to underserved rural communities. Corps members serve as frontline health workers in hard-to-reach areas.',
+    stats: ['Active in 36 states + FCT', '10,000+ NYSC corps members', 'Free care for rural communities'],
+    link: 'https://www.nysc.gov.ng'
+  },
+];
+
+function renderCampaigns() {
+  const el = document.getElementById('campaigns-grid');
+  if (el.children.length) return;
+  el.innerHTML = CAMPAIGNS.map(c => `
+    <div class="campaign-card" style="border-top-color:${c.color}">
+      <div class="c-tag" style="color:${c.color}">${c.tag}</div>
+      <div style="font-size:32px;margin-bottom:8px;">${c.icon}</div>
+      <h3>${c.title}</h3>
+      <div style="font-size:12px;color:var(--text-3);margin:6px 0;">📅 ${c.date}</div>
+      <p>${c.desc}</p>
+      <div class="campaign-stats">
+        ${c.stats.map(s => `<div class="stat-pill">${s}</div>`).join('')}
+      </div>
+      <a href="${c.link}" target="_blank" rel="noopener" class="btn btn-sm" style="background:${c.color};color:#fff;margin-top:12px;display:inline-flex;">Learn More ↗</a>
+    </div>
+  `).join('');
+}
+
+/* ============================================================
+   TELECONSULTATION
+============================================================ */
+const DOCTORS = [
+  { name: 'Dr. Amara Okafor', spec: 'General Physician', avail: 'Today, 2:00 PM', rating: '⭐⭐⭐⭐⭐', emoji: '👩‍⚕️' },
+  { name: 'Dr. Ibrahim Musa',  spec: 'Cardiologist',      avail: 'Today, 4:00 PM', rating: '⭐⭐⭐⭐', emoji: '👨‍⚕️' },
+  { name: 'Dr. Ngozi Eze',     spec: 'Gynaecologist',     avail: 'Tomorrow, 9 AM', rating: '⭐⭐⭐⭐⭐', emoji: '👩‍⚕️' },
+  { name: 'Dr. Tunde Adeyemi', spec: 'Mental Health',     avail: 'Today, 5:30 PM', rating: '⭐⭐⭐⭐', emoji: '👨‍⚕️' },
+  { name: 'Dr. Fatima Bello',  spec: 'Pediatrician',      avail: 'Tomorrow, 11 AM', rating: '⭐⭐⭐⭐⭐', emoji: '👩‍⚕️' },
+  { name: 'Dr. Chidi Nwosu',   spec: 'Dermatologist',     avail: 'Thu, 2:00 PM', rating: '⭐⭐⭐⭐', emoji: '👨‍⚕️' },
+];
+
+function renderDoctors() {
+  const el = document.getElementById('doctors-grid');
+  if (el.children.length) return;
+  el.innerHTML = DOCTORS.map(d => `
+    <div class="doctor-card">
+      <div class="doc-avatar">${d.emoji}</div>
+      <h4>${d.name}</h4>
+      <div class="spec">${d.spec}</div>
+      <div class="rating">${d.rating}</div>
+      <div class="avail">🕐 ${d.avail}</div>
+      <button class="btn btn-primary btn-sm btn-block" onclick="bookTeleconsult('${d.name}')">Book Consultation</button>
+    </div>
+  `).join('');
+}
+
+function bookTeleconsult(name) {
+  toast('Consultation request sent' + (name ? ' to ' + name : '') + '!', 'success');
+}
+
+/* ============================================================
+   APPOINTMENTS
+============================================================ */
+function bookAppointment() {
+  const name = document.getElementById('appt-name').value.trim();
+  const spec = document.getElementById('appt-specialty').value;
+  const date = document.getElementById('appt-date').value;
+  const time = document.getElementById('appt-time').value;
+  const msg  = document.getElementById('appt-msg');
+
+  if (!name || !spec || !date || !time) {
+    msg.style.color = 'var(--red)';
+    msg.textContent = 'Please fill in all required fields.';
+    return;
+  }
+
+  const appt = { id: Date.now(), name, spec, date, time };
+  appointments.push(appt);
+  const stored = JSON.parse(localStorage.getItem('hotg_appts_' + currentUser.username) || '[]');
+  stored.push(appt);
+  localStorage.setItem('hotg_appts_' + currentUser.username, JSON.stringify(stored));
+
+  msg.style.color = 'var(--green)';
+  msg.textContent = '✅ Appointment booked for ' + formatDate(date) + ' at ' + time + '!';
+  toast('Appointment booked!', 'success');
+  renderAppointments();
+}
+
+function renderAppointments() {
+  const stored = JSON.parse(localStorage.getItem('hotg_appts_' + (currentUser?.username || '')) || '[]');
+  appointments = stored;
+  const el = document.getElementById('appt-list');
+  if (!stored.length) { el.innerHTML = '<p style="color:var(--text-3);font-size:14px;">No appointments yet.</p>'; return; }
+  el.innerHTML = stored.map(a => {
+    const d = new Date(a.date);
+    const day = d.toLocaleDateString('en-NG', { day: '2-digit' });
+    const mon = d.toLocaleDateString('en-NG', { month: 'short' }).toUpperCase();
+    return `
+      <div class="appt-item">
+        <div class="appt-date-box"><div class="day">${day}</div><div class="month">${mon}</div></div>
+        <div class="appt-info">
+          <h4>${a.spec}</h4>
+          <p>${a.name} · ${a.time}</p>
+        </div>
+        <span class="badge badge-green">Confirmed</span>
+      </div>`;
+  }).join('');
+}
+
+function formatDate(str) {
+  return new Date(str).toLocaleDateString('en-NG', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+/* ============================================================
+   AI CHATBOT (Claude API)
+============================================================ */
+document.getElementById('chat-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') sendChat();
+});
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+
+  appendMsg('user', msg);
+  chatHistory.push({ role: 'user', content: msg });
+
+  // Show typing indicator
+  const typing = document.createElement('div');
+  typing.className = 'msg bot';
+  typing.id = 'typing-indicator';
+  typing.innerHTML = `<div class="msg-avatar">🤖</div><div class="typing"><span></span><span></span><span></span></div>`;
+  document.getElementById('chat-messages').appendChild(typing);
+  scrollChat();
+
+  const systemPrompt = `You are HealthBot, a friendly and knowledgeable health assistant for the HealthOnTheGo app, serving users primarily in Nigeria and West Africa. 
+You provide helpful, accurate, and compassionate health information. 
+Always recommend users seek professional medical help for serious concerns.
+Keep responses concise and easy to understand. Use simple language.
+If someone describes an emergency, urge them to call 112 immediately.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01', 'x-api-key': '' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: chatHistory
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.[0]?.text || 'Sorry, I could not process your request.';
+    chatHistory.push({ role: 'assistant', content: reply });
+    document.getElementById('typing-indicator')?.remove();
+    appendMsg('bot', reply);
+  } catch {
+    document.getElementById('typing-indicator')?.remove();
+    // Demo fallback
+    const fallback = getDemoReply(msg);
+    chatHistory.push({ role: 'assistant', content: fallback });
+    appendMsg('bot', fallback);
+  }
+}
+
+function getDemoReply(msg) {
+  const m = msg.toLowerCase();
+  if (m.includes('fever') || m.includes('temperature'))
+    return 'Fever can be a sign of infection. Drink plenty of fluids, rest, and take paracetamol to manage temperature. If fever exceeds 39°C or persists beyond 3 days, please visit a clinic. In Nigeria, it is also worth ruling out malaria — a rapid test is cheap and widely available.';
+  if (m.includes('malaria'))
+    return 'Malaria symptoms include fever, chills, headache, and body aches. Do a rapid malaria test at any pharmacy or clinic. If positive, follow your doctor\'s prescription — artemisinin-based combination therapy (ACT) is the recommended treatment. Seek care promptly, malaria can worsen quickly.';
+  if (m.includes('covid') || m.includes('coronavirus'))
+    return 'COVID-19 symptoms include fever, cough, sore throat, loss of taste/smell, and fatigue. Isolate if you test positive, stay hydrated, rest, and monitor your oxygen levels. Call your doctor if you have difficulty breathing. Vaccination is the best prevention.';
+  if (m.includes('headache'))
+    return 'Common causes of headache include dehydration, stress, eye strain, and hypertension. Drink a glass of water, rest in a quiet dark room, and take paracetamol if needed. If the headache is sudden and severe ("thunderclap"), please seek emergency care immediately.';
+  if (m.includes('emergency') || m.includes('help'))
+    return '🚨 If this is a life-threatening emergency, please call 112 immediately. You can also access the Emergency Contacts section of this app for more numbers including the NCDC hotline and mental health crisis line.';
+  return 'Thank you for your question. To give you the best advice, I need the AI connection to be configured. In the meantime, you can use the Symptom Guide to check your symptoms, browse Health Tips, or call a healthcare professional. For emergencies, always call 112.';
+}
+
+function appendMsg(role, text) {
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  const initials = role === 'user' ? (currentUser?.username?.slice(0,2)?.toUpperCase() || 'U') : '🤖';
+  div.innerHTML = `
+    <div class="msg-avatar">${initials}</div>
+    <div class="msg-bubble">${escHtml(text)}</div>`;
+  msgs.appendChild(div);
+  scrollChat();
+}
+function scrollChat() {
+  const m = document.getElementById('chat-messages');
+  m.scrollTop = m.scrollHeight;
+}
+
+/* ============================================================
+   FAQs
+============================================================ */
+const FAQS = [
+  { q: 'What is HealthOnTheGo?',
+    a: 'HealthOnTheGo is a mobile health app designed to help users in Nigeria and West Africa find nearby clinics, access health tips, get AI-powered symptom guidance, and reach emergency contacts — all from their phone.' },
+  { q: 'Is this app a substitute for seeing a doctor?',
+    a: 'No. HealthOnTheGo provides general health information and guidance only. Always consult a licensed healthcare professional for diagnosis and treatment, especially for serious or persistent symptoms.' },
+  { q: 'How does the Symptom Guide work?',
+    a: 'The Symptom Guide uses Claude AI (by Anthropic) to analyse the symptoms you select and provide possible explanations and self-care advice. It is not a diagnostic tool and should not replace medical consultation.' },
+  { q: 'Is my health data private?',
+    a: 'Yes. Your health profile data is stored locally on your device by default. When you use AI features, symptom text is sent to Anthropic\'s API to generate a response but is not stored by us. See our Privacy Policy for full details.' },
+  { q: 'How do I find a clinic near me?',
+    a: 'Go to the Clinic Finder section and tap "Near Me". The app will request your location and display nearby clinics, hospitals, and pharmacies. You can also search by name or area.' },
+  { q: 'What happens when I book an appointment?',
+    a: 'Appointments are saved to your account. In the full version with a backend configured, you will receive email or SMS reminders. Currently, appointments are stored locally and displayed in the Appointments section.' },
+  { q: 'Can I use this app without internet?',
+    a: 'Core features like Emergency Contacts, Health Tips, and your saved Profile work offline. AI-powered features (Symptom Guide and Health Chat) require an internet connection to function.' },
+  { q: 'How do I contact support?',
+    a: 'For support or feedback, email us at support@healthonthego.ng. You can also submit feedback through the app store review system once the app is published.' },
+  { q: 'How does Teleconsultation work?',
+    a: 'Browse available doctors and book a video or phone consultation. Once the backend is fully configured, you will receive a confirmation and a secure video link. Doctors are licensed professionals available for 15–30 minute sessions.' },
+  { q: 'Which health campaigns are featured?',
+    a: 'We feature active, government-endorsed health campaigns in Nigeria, including World TB Day, the #KnowYourNumbers initiative, and the NYSC Health Initiative for Rural Dwellers (HIRD). Campaigns are updated regularly.' },
+];
+
+function renderFAQs() {
+  const el = document.getElementById('faq-list');
+  if (el.children.length) return;
+  el.innerHTML = FAQS.map((f, i) => `
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFAQ(${i})" aria-expanded="false" id="faq-q-${i}">
+        ${f.q}
+        <span class="chevron">▾</span>
+      </button>
+      <div class="faq-a" id="faq-a-${i}">
+        <div class="faq-a-inner">${f.a}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleFAQ(i) {
+  const q = document.getElementById('faq-q-' + i);
+  const a = document.getElementById('faq-a-' + i);
+  const open = q.classList.toggle('open');
+  a.classList.toggle('open', open);
+  q.setAttribute('aria-expanded', String(open));
+}
+
+/* ============================================================
+   HELPERS
+============================================================ */
+function markdownToHtml(text) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/^### (.+)$/gm, '<h4 style="font-weight:700;margin:14px 0 6px;color:var(--green-dk)">$1</h4>')
+    .replace(/^## (.+)$/gm, '<h3 style="font-weight:700;margin:16px 0 8px;">$1</h3>')
+    .replace(/^# (.+)$/gm, '<h2 style="font-weight:800;margin:18px 0 10px;">$1</h2>')
+    .replace(/^[-•] (.+)$/gm, '<li style="margin-bottom:4px;">$1</li>')
+    .replace(/(<li.*<\/li>\n?)+/g, '<ul style="padding-left:18px;margin:8px 0;">$&</ul>')
+    .replace(/\n\n/g, '</p><p style="margin-top:10px;">')
+    .replace(/\n/g, '<br>');
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+            .replace(/\n/g,'<br>');
+}
+</script>
+</body>
+</html>
